@@ -1,6 +1,7 @@
 import socket, random, os, threading, logging, time
 import numpy as np # idk, might need it
 from PIL import Image, ImageDraw, ImageFont
+import math
 
 tc = 16 # thread count, 32 seems to work well but lower to like 8 if you want consistency
 
@@ -8,20 +9,13 @@ class Thr: # thread class with initializer and function
     def __init__(self):
          self._lock = threading.Lock() # im scared to take this out even though i dont need it anymore
 
-    # def sendlinesLocked(self, name, list):
-    #         for line in list[name]:
-    #             with self._lock:
-    #                 s.send(line.encode())
-    #                 time.sleep(0.05)
-
     def sendlinesMulti(self, name, list):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # creates a socket for every thread TODO: dont do that
         # (if i dont do this, it becomes a race condition)
-        # s.connect(("tcp://pixelflut.uwu.industries", 1234))
-        s.connect(("127.0.0.1", 1234)) # replace with host and port you need
+        s.connect(('pixelflut.uwu.industries', 1234))
         for line in list[name]:
             s.send(line.encode())
-            time.sleep(0.1) # time.sleep to simulate latency when testing on local server, remove before using
+            # time.sleep(0.1) # time.sleep to simulate latency when testing on local server, remove before using
 
 def chunks(lst, n): # this is like the only thing in this program that is written well
     output = list() # this creates a list where we will put the other lists
@@ -33,7 +27,7 @@ mode = input("mode: ") # selects between different operation types
 if  mode == "t": # text mode - generates text at specified size
     txt = input("text: ")
     size = int(input("size: "))
-    font = ImageFont.truetype('./Arial.ttf', size) # gets arial font from current directory (HACK)
+    font = ImageFont.truetype('C:\\Windows\\Fonts\\arial.ttf', size)
     img = Image.new('RGB', (0, 0), (255, 255, 255)) # placeholder so i can use textLength because this module is horrible
     draw = ImageDraw.Draw(img)
     tlength = draw.textlength(txt, font)
@@ -48,7 +42,7 @@ elif mode == "r":
 else: # draw image and rescale to specified size
     filename = input("file: ")
     img = Image.open(filename)
-    img = img.resize([int(elem) for elem in input("size: ").split()]) # I LOVE LIST COMPREHENSION!!!!
+    img = img.resize(map(int, input("size: ").split())) # I LOVE LIST COMPREHENSION!!!!
 
 width, height = img.size
 
@@ -56,7 +50,7 @@ width, height = img.size
 # size = s.recv(10).decode()[5:].split()
 # print(size)
 
-xoff, yoff = [int(elem) for elem in input("offset: ").split()] # offset
+xoff, yoff = map(int, input("offset: ").split()) # offset
 
 lines = [] # The List
 for y in range(height):
@@ -64,7 +58,11 @@ for y in range(height):
     for x in range(width):
         rgb = img.getpixel((x, y)) # get color of pixel
         hexcolor = '%02x%02x%02x' % (rgb) # convert color to hex
-        line += 'PX %d %d %s\n' % (x + xoff, y + yoff, hexcolor) # create command
+        
+        xp = x + xoff-tlength/2
+        yp = y + yoff-size*3/4
+
+        line += 'PX %d %d %s\n' % (xp*math.cos(math.pi/4)-yp*math.sin(math.pi/4), yp*math.cos(math.pi/4)+xp*math.sin(math.pi/4), hexcolor) # create command
     lines.append(line) # add command to The List
 
 
