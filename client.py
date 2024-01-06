@@ -53,16 +53,21 @@ width, height = img.size
 xoff, yoff = map(int, input("offset: ").split()) # offset
 
 lines = [] # The List
+
+rotation = math.radians(float(input("rotation in degrees: ")))
+
 for y in range(height):
     line = ''
     for x in range(width):
         rgb = img.getpixel((x, y)) # get color of pixel
         hexcolor = '%02x%02x%02x' % (rgb) # convert color to hex
-        
-        xp = x + xoff-tlength/2
-        yp = y + yoff-size*3/4
 
-        line += 'PX %d %d %s\n' % (xp*math.cos(math.pi/4)-yp*math.sin(math.pi/4), yp*math.cos(math.pi/4)+xp*math.sin(math.pi/4), hexcolor) # create command
+        xp = x 
+        yp = y 
+
+            
+        line += 'PX %d %d %s\n' % (int(round(x * round(math.cos(rotation), 1) - y * round(math.sin(rotation), 1) + xoff - tlength/2)), int(round(y * round(math.cos(rotation), 1) + x * round(math.sin(rotation), 1) + yoff - size*3/4)), hexcolor)
+
     lines.append(line) # add command to The List
 
 
