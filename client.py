@@ -64,9 +64,8 @@ for y in range(height):
 
         xp = x 
         yp = y 
-
             
-        line += 'PX %d %d %s\n' % (int(round(x * round(math.cos(rotation), 1) - y * round(math.sin(rotation), 1) + xoff - tlength/2)), int(round(y * round(math.cos(rotation), 1) + x * round(math.sin(rotation), 1) + yoff - size*3/4)), hexcolor)
+        line += 'PX %d %d %s\n' % (int(round(x * round(math.cos(rotation), 2) - y * round(math.sin(rotation), 2) + xoff - tlength/2)), int(round(y * round(math.cos(rotation), 2) + x * round(math.sin(rotation), 2) + yoff - size*3/4)), hexcolor)
 
     lines.append(line) # add command to The List
 
