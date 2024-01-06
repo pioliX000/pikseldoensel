@@ -61,9 +61,6 @@ for y in range(height):
     for x in range(width):
         rgb = img.getpixel((x, y)) # get color of pixel
         hexcolor = '%02x%02x%02x' % (rgb) # convert color to hex
-
-        xp = x 
-        yp = y 
             
         line += 'PX %d %d %s\n' % (int(round(x * round(math.cos(rotation), 2) - y * round(math.sin(rotation), 2) + xoff - tlength/2)), int(round(y * round(math.cos(rotation), 2) + x * round(math.sin(rotation), 2) + yoff - size*3/4)), hexcolor)
 
