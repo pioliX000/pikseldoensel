@@ -3,7 +3,7 @@ import numpy as np # idk, might need it
 from PIL import Image, ImageDraw, ImageFont
 import math
 
-tc = 16 # thread count, 32 seems to work well but lower to like 8 if you want consistency
+tc = 1 # thread count, 32 seems to work well but lower to like 8 if you want consistency
 
 class Thr: # thread class with initializer and function
 	def __init__(self):
@@ -30,7 +30,7 @@ mode = input("mode: ") # selects between different operation types
 if  mode == "t": # text mode - generates text at specified size
 	txt = input("text: ")
 	size = int(input("size: "))
-	font = ImageFont.truetype('C:\\Windows\\Fonts\\arial.ttf', size)
+	font = ImageFont.truetype('Arial.ttf', size)
 	img = Image.new('RGB', (0, 0), (255, 255, 255)) # placeholder so i can use textLength because this module is horrible
 	draw = ImageDraw.Draw(img)
 	tlength = draw.textlength(txt, font)
@@ -38,8 +38,14 @@ if  mode == "t": # text mode - generates text at specified size
 	draw = ImageDraw.Draw(img)
 	draw.text((10, 10), txt, fill=(0, 0, 0), font=font, align='center')
 	dosmode = input("dos mode? (y/n): ")
+	width, height = img.size
+
+	for y in range(height):
+		for x in range(width):
+			if img.getpixel((x, y)) == (255, 255, 255, 255):
+				img.putpixel((x, y), (255, 255, 255, 0))
 elif mode == "w": 
-	img = Image.new('RGB', ([int(elem) for elem in input("size: ").split()]), (255, 255, 255))
+	img = Image.new('RGB', ([int(elem) for elem in input("size: ").split()]), (255, 255, 254))
 	dosmode = input("dos mode? (y/n): ")
 elif mode == "r":
 	w, h = [int(elem) for elem in input("size: ").split()]
@@ -68,7 +74,8 @@ def run(rotation):
 			xp = x - width/2
 			yp = y - height/2
 
-			line += f'PX {int(round(xp * round(math.cos(rotation), 2) - yp * round(math.sin(rotation), 2) + xoff - tlength/2))} {int(round(yp * round(math.cos(rotation), 2) + xp * round(math.sin(rotation), 2) + yoff - size*3/4))} {hexcolor}\n'
+			if (rgb[0], rgb[1], rgb[2]) != (255, 255, 255): 
+				line += f'PX {int(round(xp * round(math.cos(rotation), 2) - yp * round(math.sin(rotation), 2) + xoff))} {int(round(yp * round(math.cos(rotation), 2) + xp * round(math.sin(rotation), 2) + yoff))} {hexcolor}\n'
 
 		lines.append(line) # add command to The List
 
@@ -94,8 +101,8 @@ lines = [] # The List
 if dosmode == "y":
 	# this can probably overload servers if the host doesnt have enough bandwidth
 	# womp womp
-	for rotation in range(0, 361):
-		run(rotation)
+	for rotation in range(0, 271, 1):
+		run(math.radians(rotation))
 else:	
 	rotation = math.radians(float(input("rotation in degrees: ")))
 	run(rotation)
